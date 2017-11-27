@@ -1,6 +1,6 @@
 # NET.W.2017.Astapchik.16
 EPAM training day 16 homework
-В текстовом файле построчно хранится информация о URL-адресах, представленных в виде <scheme>://<host>/<URL‐path>?<parameters>, где сегмент parameters - это набор пар вида key=value, при этом сегменты URL‐path и parameters  или сегмент parameters могут отсутствовать. 
+В текстовом файле построчно хранится информация о URL-адресах, представленных в виде &lt;scheme>://&lt;host>/&lt;URL‐path>?&lt;parameters>, где сегмент parameters - это набор пар вида key=value, при этом сегменты URL‐path и parameters  или сегмент parameters могут отсутствовать. 
 Разработать систему типов (руководствоваться принципами SOLID) для экспорта данных, полученных на основе разбора информации текстового файла, в XML-документ по следующему правилу, например, для текстового файла с URL-адресами 
   
 https://github.com/AnzhelikaKravchuk?tab=repositories 
