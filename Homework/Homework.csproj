@@ -40,10 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IURLLogger.cs" />
+    <Compile Include="IUrlLogger.cs" />
+    <Compile Include="IUrlParser.cs" />
+    <Compile Include="IUrlProvider.cs" />
+    <Compile Include="IUrlWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="URLScheme.cs" />
-    <Compile Include="URLWorker.cs" />
+    <Compile Include="UrlScheme.cs" />
+    <Compile Include="TextFileUrlProvider.cs" />
+    <Compile Include="UrlWorker.cs" />
+    <Compile Include="XmlUrlWriter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

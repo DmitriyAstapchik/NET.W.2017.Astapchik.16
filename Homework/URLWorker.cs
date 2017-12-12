@@ -9,106 +9,63 @@ using System.Xml;
 namespace Homework
 {
     /// <summary>
-    /// class for work with URLs - reading URLs from a text file and saves them to xml file
+    /// URL worker
     /// </summary>
-    public static class URLWorker
+    /// <typeparam name="TScheme">URL scheme to work with</typeparam>
+    public class UrlWorker<TScheme>
     {
         /// <summary>
-        /// saves url to xml file
+        /// URL string provider
         /// </summary>
-        /// <param name="urls">URLs to save</param>
-        /// <param name="xmlFile">path to xml file</param>
-        public static void SaveToXML(IEnumerable<URLScheme> urls, string xmlFile)
+        private IUrlProvider provider;
+
+        /// <summary>
+        /// URL scheme parser
+        /// </summary>
+        private IUrlParser<TScheme> parser;
+
+        /// <summary>
+        /// URL schemes writer
+        /// </summary>
+        private IUrlWriter<TScheme> writer;
+
+        /// <summary>
+        /// bad URLs logger
+        /// </summary>
+        private IUrlLogger logger;
+
+        /// <summary>
+        /// constructs a worker instance with specified components
+        /// </summary>
+        /// <param name="provider">URL string provider</param>
+        /// <param name="parser">URL scheme parser</param>
+        /// <param name="writer">URL schemes writer</param>
+        /// <param name="logger">bad URLs logger</param>
+        public UrlWorker(IUrlProvider provider, IUrlParser<TScheme> parser, IUrlWriter<TScheme> writer, IUrlLogger logger)
         {
-            var writer = new XmlTextWriter(xmlFile, Encoding.UTF8);
-            writer.WriteStartDocument();
-            writer.WriteStartElement("urlAddresses");
-            foreach (var url in urls)
-            {
-                WriteURL(url);
-            }
-
-            writer.WriteEndElement();
-            writer.WriteEndDocument();
-            writer.Flush();
-            return;
-
-            void WriteURL(URLScheme url)
-            {
-                writer.WriteStartElement("urlAddress");
-                writer.WriteAttributeString("scheme", url.Scheme);
-                WriteHost();
-                WritePath();
-                WriteParameters();
-                writer.WriteEndElement();
-                return;
-
-                void WriteHost()
-                {
-                    writer.WriteStartElement("host");
-                    writer.WriteAttributeString("name", url.Host);
-                    writer.WriteEndElement();
-                }
-
-                void WritePath()
-                {
-                    if (url.Segments?.Length > 0)
-                    {
-                        writer.WriteStartElement("uri");
-                        foreach (var segment in url.Segments)
-                        {
-                            writer.WriteElementString("segment", segment);
-                        }
-
-                        writer.WriteEndElement();
-                    }
-                }
-
-                void WriteParameters()
-                {
-                    if (url.Parameters?.Length > 0)
-                    {
-                        writer.WriteStartElement("parameters");
-                        foreach (var param in url.Parameters)
-                        {
-                            writer.WriteStartElement("parameter");
-                            writer.WriteAttributeString("key", param.Key);
-                            writer.WriteAttributeString("value", param.Value);
-                            writer.WriteEndElement();
-                        }
-
-                        writer.WriteEndElement();
-                    }
-                }
-            }
+            this.provider = provider;
+            this.parser = parser;
+            this.writer = writer;
+            this.logger = logger;
         }
 
         /// <summary>
-        /// gets URLs from a text file and logs invalid URLs
+        /// writes parsed URLs to output
         /// </summary>
-        /// <param name="textFilePath">text file path</param>
-        /// <param name="logger">url logger</param>
-        /// <returns>array of URLs</returns>
-        public static URLScheme[] GetURLs(string textFilePath, IURLLogger logger)
+        public void Convert()
         {
-            using (var reader = new StreamReader(File.OpenRead(textFilePath)))
+            var urls = provider.GetUrls();
+            var parsed = urls.Select(u =>
             {
-                var list = new List<URLScheme>();
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                var result = parser.Parse(u);
+                if (result == null)
                 {
-                    if (URLScheme.TryParse(line, out URLScheme url))
-                    {
-                        list.Add(url);
-                    }
-                    else
-                    {
-                        logger.Log(line);
-                    }
+                    logger.Log(u);
                 }
 
-                return list.ToArray();
-            }
+                return result;
+            });
+            writer.WriteUrls(parsed);
         }
     }
 }

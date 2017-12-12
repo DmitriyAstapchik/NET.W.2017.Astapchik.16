@@ -3,7 +3,7 @@
     /// <summary>
     /// logs invalid URLs
     /// </summary>
-    public interface IURLLogger
+    public interface IUrlLogger
     {
         /// <summary>
         /// logs invalid URL
